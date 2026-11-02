@@ -6,6 +6,7 @@
   :root{ --bg:#1d1610; --ink:#f6ead8; --muted:#b39a78; --line:#4a3b2b; --card:#2a2017; --accent-soft:#4a2a1a; --accent-ink:#ff9a6e; --track:#3a2d20; }
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html{background:var(--bg)}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif;
@@ -81,4 +82,7 @@ dialog input{font:inherit;color:inherit}
 .note{font-size:12px;color:var(--muted);margin-top:10px}
 .actions{display:flex;gap:10px;margin-top:18px}
 .actions button{flex:1;padding:14px;border-radius:14px;border:0;font:inherit;font-weight:700;cursor:pointer}
+.danger{background:transparent;color:#d33a2c;flex:0 0 auto!important;padding:14px 8px!important}
+.clear{display:block;margin:28px auto 0;border:0;background:none;color:var(--muted);font:inherit;font-size:13px;font-weight:600;text-decoration:underline;cursor:pointer;padding:8px}
+.row .label span:first-child{cursor:text}
 .primary{background:var(--accent);color:#fff}.ghost{background:var(--accent-soft);color:var(--accent-ink)}

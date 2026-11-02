@@ -31,19 +31,21 @@
     <div class="lab"><span>Done today</span><span id="doneCount"></span></div>
     <div id="done"></div>
   </div>
+  <button id="clearAll" class="clear" hidden>Clear all tasks</button>
 </main>
 
 <button class="fab" id="openAdd" aria-label="Add task">+</button>
 
 <dialog id="addDialog">
   <form id="addForm" method="dialog">
-    <h2>New task</h2>
+    <h2 id="dlgTitle">New task</h2>
     <input id="title" required maxlength="80" placeholder="What needs doing?" autocomplete="off">
     <label class="prio"><input id="priority" type="checkbox"> Priority</label>
     <p class="note">New tasks go to the bottom. Drag them up when they matter.</p>
     <div class="actions">
+      <button type="button" id="del" class="danger" hidden>Delete</button>
       <button type="button" id="cancel" class="ghost">Cancel</button>
-      <button type="submit" class="primary">Add</button>
+      <button type="submit" class="primary" id="save">Add</button>
     </div>
   </form>
 </dialog>

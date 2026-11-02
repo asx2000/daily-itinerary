@@ -50,6 +50,7 @@
     todo.forEach((t, i) => box.append(row(t, i)));
     $('hint').hidden = todo.length < 2;
     $('empty').hidden = total > 0;
+    $('clearAll').hidden = total === 0;
 
     $('doneWrap').hidden = !done.length;
     $('doneCount').textContent = done.length;
@@ -83,6 +84,8 @@
     label.className = 'label';
     const name = document.createElement('span');
     name.textContent = t.title; // textContent: no HTML injection
+    name.title = 'Tap to edit';
+    name.onclick = () => openDialog(t);
     label.append(name);
     if (t.priority) { const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = 'Priority'; label.append(tag); }
     el.append(label);
@@ -170,13 +173,34 @@
 
   // ---- Add dialog ----
   const dlg = $('addDialog');
-  $('openAdd').onclick = () => { $('title').value = ''; $('priority').checked = false; dlg.showModal(); $('title').focus(); };
+  let editing = null; // the task being edited, or null when adding
+  function openDialog(task) {
+    editing = task || null;
+    $('dlgTitle').textContent = editing ? 'Edit task' : 'New task';
+    $('save').textContent = editing ? 'Save' : 'Add';
+    $('del').hidden = !editing;
+    $('title').value = editing ? editing.title : '';
+    $('priority').checked = editing ? !!editing.priority : false;
+    dlg.showModal(); $('title').focus();
+  }
+  $('openAdd').onclick = () => openDialog(null);
   $('cancel').onclick = () => dlg.close();
+  $('del').onclick = () => {
+    if (editing) state.tasks = state.tasks.filter(x => x.id !== editing.id);
+    dlg.close(); save(); render();
+  };
   $('addForm').onsubmit = () => {
     const title = $('title').value.trim();
     if (!title) return;
-    state.tasks.splice(state.tasks.filter(t => !t.done).length, 0, { id: uid(), title, priority: $('priority').checked, done: false });
+    if (editing) {
+      editing.title = title; editing.priority = $('priority').checked;
+    } else {
+      state.tasks.splice(state.tasks.filter(t => !t.done).length, 0, { id: uid(), title, priority: $('priority').checked, done: false });
+    }
     save(); render();
+  };
+  $('clearAll').onclick = () => {
+    if (confirm('Delete all tasks? This cannot be undone.')) { state.tasks = []; save(); render(); }
   };
 
   document.addEventListener('visibilitychange', () => {
