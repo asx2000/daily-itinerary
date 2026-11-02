@@ -16,14 +16,21 @@
 </head>
 <body>
 <main class="app">
-  <section class="hero">
-    <h1 id="greeting" title="Tap to set your name"></h1>
+  <header class="hdr">
+    <small id="date"></small>
+    <h1>Today</h1>
     <p id="summary"></p>
-    <div class="bar"><i id="barFill"></i></div>
-  </section>
+    <div class="prog"><i id="barFill"></i></div>
+  </header>
 
-  <div id="list"></div>
+  <div id="todo"></div>
+  <p id="hint" class="hint" hidden>Hold the dots and drag to reorder. The top task is Up next.</p>
   <p id="empty" class="empty" hidden>Nothing planned yet. Tap + to add your first task.</p>
+
+  <div id="doneWrap" hidden>
+    <div class="lab"><span>Done today</span><span id="doneCount"></span></div>
+    <div id="done"></div>
+  </div>
 </main>
 
 <button class="fab" id="openAdd" aria-label="Add task">+</button>
@@ -32,10 +39,8 @@
   <form id="addForm" method="dialog">
     <h2>New task</h2>
     <input id="title" required maxlength="80" placeholder="What needs doing?" autocomplete="off">
-    <div class="row2">
-      <label>Time <input id="time" type="time" required></label>
-      <label class="prio"><input id="priority" type="checkbox"> Priority</label>
-    </div>
+    <label class="prio"><input id="priority" type="checkbox"> Priority</label>
+    <p class="note">New tasks go to the bottom. Drag them up when they matter.</p>
     <div class="actions">
       <button type="button" id="cancel" class="ghost">Cancel</button>
       <button type="submit" class="primary">Add</button>
