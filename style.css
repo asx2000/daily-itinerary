@@ -84,5 +84,8 @@ dialog input{font:inherit;color:inherit}
 .actions button{flex:1;padding:14px;border-radius:14px;border:0;font:inherit;font-weight:700;cursor:pointer}
 .danger{background:transparent;color:#d33a2c;flex:0 0 auto!important;padding:14px 8px!important}
 .clear{display:block;margin:28px auto 0;border:0;background:none;color:var(--muted);font:inherit;font-size:13px;font-weight:600;text-decoration:underline;cursor:pointer;padding:8px}
-.row .label span:first-child{cursor:text}
+.row .label{cursor:pointer}
+.edit{border:0;background:none;color:var(--muted);width:36px;height:36px;margin:-6px -6px -6px 0;flex:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;opacity:.8}
+.row.d .edit{opacity:.6}
 .primary{background:var(--accent);color:#fff}.ghost{background:var(--accent-soft);color:var(--accent-ink)}

@@ -84,11 +84,17 @@
     label.className = 'label';
     const name = document.createElement('span');
     name.textContent = t.title; // textContent: no HTML injection
-    name.title = 'Tap to edit';
-    name.onclick = () => openDialog(t);
+    label.onclick = () => openDialog(t); // tap anywhere on the name to edit
     label.append(name);
     if (t.priority) { const tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = 'Priority'; label.append(tag); }
     el.append(label);
+
+    const edit = document.createElement('button');
+    edit.className = 'edit';
+    edit.setAttribute('aria-label', 'Edit task');
+    edit.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 20h4L19 9l-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M13.5 6.5l4 4" stroke="currentColor" stroke-width="2"/></svg>';
+    edit.onclick = () => openDialog(t);
+    el.append(edit);
 
     if (t.done) {
       const del = document.createElement('button');

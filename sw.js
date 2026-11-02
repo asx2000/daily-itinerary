@@ -1,4 +1,4 @@
-const CACHE = 'itinerary-v4';
+const CACHE = 'itinerary-v5';
 const ASSETS = [
   './', './index.html', './style.css', './app.js',
   './manifest.webmanifest',
@@ -17,19 +17,17 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Cache-first, falling back to network; refresh cache in the background.
+// Network-first: when online you always get the latest version.
+// The cache is only used as the offline fallback.
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request).then(hit => {
-      const net = fetch(e.request).then(res => {
-        if (res.ok && new URL(e.request.url).origin === location.origin) {
-          const copy = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, copy));
-        }
-        return res;
-      }).catch(() => hit);
-      return hit || net;
-    })
+    fetch(e.request, { cache: 'no-cache' }).then(res => {
+      if (res.ok && new URL(e.request.url).origin === location.origin) {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+      }
+      return res;
+    }).catch(() => caches.match(e.request).then(hit => hit || caches.match('./index.html')))
   );
 });
