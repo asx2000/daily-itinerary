@@ -22,12 +22,7 @@
   // State is per day: { date, tasks:[{id,title,time,priority,done}] }
   let state = store.get(KEY, null);
   if (!state) {
-    state = { date: today(), tasks: [
-      { id: uid(), title: 'Morning run', time: '07:30', priority: false, done: false },
-      { id: uid(), title: 'Deep work: first draft', time: '11:00', priority: true, done: false },
-      { id: uid(), title: 'Lunch', time: '13:00', priority: false, done: false },
-      { id: uid(), title: 'Cook dinner', time: '18:30', priority: false, done: false },
-    ]};
+    state = { date: today(), tasks: [] };
   }
   // New day: carry over unfinished tasks, drop finished ones.
   if (state.date !== today()) {
