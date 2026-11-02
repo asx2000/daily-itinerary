@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fff4e0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Itinerary">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<title>Daily Itinerary</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="app">
+  <section class="hero">
+    <h1 id="greeting" title="Tap to set your name"></h1>
+    <p id="summary"></p>
+    <div class="bar"><i id="barFill"></i></div>
+  </section>
+
+  <div id="list"></div>
+  <p id="empty" class="empty" hidden>Nothing planned yet. Tap + to add your first task.</p>
+</main>
+
+<button class="fab" id="openAdd" aria-label="Add task">+</button>
+
+<dialog id="addDialog">
+  <form id="addForm" method="dialog">
+    <h2>New task</h2>
+    <input id="title" required maxlength="80" placeholder="What needs doing?" autocomplete="off">
+    <div class="row2">
+      <label>Time <input id="time" type="time" required></label>
+      <label class="prio"><input id="priority" type="checkbox"> Priority</label>
+    </div>
+    <div class="actions">
+      <button type="button" id="cancel" class="ghost">Cancel</button>
+      <button type="submit" class="primary">Add</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
