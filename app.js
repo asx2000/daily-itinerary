@@ -93,7 +93,23 @@
     edit.setAttribute('aria-label', `Edit group ${g.name}`);
     edit.onclick = e => { e.stopPropagation(); openGroup(g); };
 
-    top.append(ic, txt, edit);
+    const gg = document.createElement('button');
+    gg.className = 'ggrip'; gg.textContent = '⋮⋮';
+    gg.setAttribute('aria-label', `Drag to reorder group ${g.name}. Arrow keys also work.`);
+    gg.onclick = e => e.stopPropagation();
+    gg.addEventListener('pointerdown', e => startGroupDrag(e, el));
+    gg.addEventListener('keydown', e => {
+      const dir = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0;
+      if (!dir) return;
+      e.preventDefault();
+      const i = state.groups.indexOf(g), j = i + dir;
+      if (j < 0 || j >= state.groups.length) return;
+      [state.groups[i], state.groups[j]] = [state.groups[j], state.groups[i]];
+      normalize(); save(); render();
+      const n = document.querySelector(`.card[data-gid="${g.id}"] .ggrip`); if (n) n.focus();
+    });
+
+    top.append(gg, ic, txt, edit);
     if (g.collapsed || !tasks.length) {
       const c = document.createElement('div'); c.className = 'chev'; c.innerHTML = CHEV;
       c.style.transform = g.collapsed ? '' : 'rotate(180deg)';
@@ -243,6 +259,61 @@
       state.tasks = next;
       const g = dest && state.groups.find(x => x.id === dest.dataset.gid);
       if (g) g.collapsed = false; // reveal where it landed
+      normalize(); save(); render();
+    };
+    grip.addEventListener('pointermove', onMove);
+    grip.addEventListener('pointerup', end);
+    grip.addEventListener('pointercancel', end);
+  }
+
+  // ---- reorder groups by dragging their handle ----
+  // Cards shrink to one line while dragging so long groups are easy to move.
+  function startGroupDrag(e, card) {
+    if (e.button > 0) return;
+    e.preventDefault();
+    const grip = e.currentTarget, box = $('groups');
+    grip.setPointerCapture(e.pointerId);
+    box.classList.add('reordering');
+    document.body.classList.add('dragging');
+    const rect = card.getBoundingClientRect(); // measured after shrinking
+    const grabY = e.clientY - rect.top;
+    let lastY = e.clientY, raf = 0;
+
+    const ph = document.createElement('div');
+    ph.className = 'ph card-ph';
+    ph.style.height = rect.height + 'px';
+    card.before(ph);
+    card.classList.add('lift');
+    Object.assign(card.style, { position: 'fixed', left: rect.left + 'px', top: rect.top + 'px', width: rect.width + 'px', margin: '0', zIndex: 50 });
+
+    function update(y) {
+      card.style.top = (y - grabY) + 'px';
+      const others = [...box.children].filter(c => c.classList.contains('card') && c !== card);
+      const ref = others.find(c => { const b = c.getBoundingClientRect(); return y < b.top + b.height / 2; }) || null;
+      if (ph.nextElementSibling !== ref) box.insertBefore(ph, ref);
+    }
+    const loop = () => {
+      const sy = scrollY;
+      if (lastY < 90) scrollBy(0, -10); else if (lastY > innerHeight - 110) scrollBy(0, 10);
+      if (scrollY !== sy) update(lastY);
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+
+    const onMove = ev => { lastY = ev.clientY; update(lastY); };
+    const end = () => {
+      cancelAnimationFrame(raf);
+      grip.removeEventListener('pointermove', onMove);
+      grip.removeEventListener('pointerup', end);
+      grip.removeEventListener('pointercancel', end);
+      document.body.classList.remove('dragging');
+      const byId = new Map(state.groups.map(g => [g.id, g]));
+      const order = [];
+      [...box.children].forEach(c => {
+        if (c === ph) order.push(byId.get(card.dataset.gid));
+        else if (c !== card && c.dataset.gid) order.push(byId.get(c.dataset.gid));
+      });
+      state.groups = order.filter(Boolean);
       normalize(); save(); render();
     };
     grip.addEventListener('pointermove', onMove);
