@@ -23,14 +23,9 @@
     <div class="prog"><i id="barFill"></i></div>
   </header>
 
-  <div id="todo"></div>
-  <p id="hint" class="hint" hidden>Hold the dots and drag to reorder. The top task is Up next.</p>
-  <p id="empty" class="empty" hidden>Nothing planned yet. Tap + to add your first task.</p>
-
-  <div id="doneWrap" hidden>
-    <div class="lab"><span>Done today</span><span id="doneCount"></span></div>
-    <div id="done"></div>
-  </div>
+  <div id="groups"></div>
+  <p id="hint" class="hint" hidden>Hold the dots and drag a task into any group.</p>
+  <button id="addGroup" class="addg">+ Add group</button>
   <button id="clearAll" class="clear" hidden>Clear all tasks</button>
 </main>
 
@@ -40,12 +35,32 @@
   <form id="addForm" method="dialog">
     <h2 id="dlgTitle">New task</h2>
     <input id="title" required maxlength="80" placeholder="What needs doing?" autocomplete="off">
+    <label class="fld">Group
+      <select id="group"></select>
+    </label>
     <label class="prio"><input id="priority" type="checkbox"> Priority</label>
-    <p class="note">New tasks go to the bottom. Drag them up when they matter.</p>
     <div class="actions">
       <button type="button" id="del" class="danger" hidden>Delete</button>
       <button type="button" id="cancel" class="ghost">Cancel</button>
       <button type="submit" class="primary" id="save">Add</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="groupDialog">
+  <form id="groupForm" method="dialog">
+    <h2 id="gDlgTitle">New group</h2>
+    <input id="gName" required maxlength="30" placeholder="Name it anything, e.g. Before work" autocomplete="off">
+    <div class="fld">Colour</div>
+    <div id="gColors" class="swatches"></div>
+    <div id="gMove" class="move" hidden>
+      <button type="button" id="gUp" class="ghost">↑ Move up</button>
+      <button type="button" id="gDown" class="ghost">↓ Move down</button>
+    </div>
+    <div class="actions">
+      <button type="button" id="gDel" class="danger" hidden>Delete group</button>
+      <button type="button" id="gCancel" class="ghost">Cancel</button>
+      <button type="submit" class="primary" id="gSave">Add</button>
     </div>
   </form>
 </dialog>
