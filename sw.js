@@ -1,4 +1,4 @@
-const CACHE = 'itinerary-v8';
+const CACHE = 'itinerary-v9';
 const ASSETS = [
   './', './index.html', './style.css', './app.js',
   './manifest.webmanifest',

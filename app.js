@@ -47,6 +47,7 @@
   const upNext = () => state.tasks.find(t => !t.done); // first unfinished task across all groups
 
   // ---- render ----
+  let prevComplete = null, justCompleted = new Set();
   function render() {
     const total = state.tasks.length, doneN = state.tasks.filter(t => t.done).length;
     $('date').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
@@ -58,6 +59,9 @@
     $('clearAll').hidden = total === 0;
 
     const next = upNext();
+    const nowComplete = new Set(state.groups.filter(g => { const t = inGroup(g); return t.length && t.every(x => x.done); }).map(g => g.id));
+    justCompleted = new Set(prevComplete ? [...nowComplete].filter(id => !prevComplete.has(id)) : []);
+    prevComplete = nowComplete;
     const box = $('groups');
     box.classList.remove('reordering'); // never leave the compact drag view on
     box.textContent = '';
@@ -67,13 +71,22 @@
   function card(g, next) {
     const tasks = inGroup(g);
     const done = tasks.filter(t => t.done), todo = tasks.filter(t => !t.done);
+    const complete = tasks.length > 0 && !todo.length;          // every task in the group is done
+    const nx0 = next && next.groupId === g.id;                   // this group holds "Up next"
+    if (!complete) delete g.open;                                // a finished group folds again next time
+    const collapsed = g.collapsed || (complete && !g.open);      // finished groups fold away by default
     const el = document.createElement('section');
-    el.className = 'card' + (g.collapsed ? ' collapsed' : '');
+    el.className = 'card' + (collapsed ? ' collapsed' : '') + (complete ? ' complete' : '') + (nx0 ? ' current' : '')
+      + (complete && justCompleted.has(g.id) ? ' just' : '');
     el.dataset.gid = g.id;
 
     const top = document.createElement('div');
     top.className = 'top';
-    top.onclick = () => { g.collapsed = !g.collapsed; save(); render(); };
+    top.onclick = () => {
+      if (collapsed) { g.collapsed = false; if (complete) g.open = true; }
+      else { g.collapsed = true; if (complete) g.open = false; }
+      save(); render();
+    };
 
     const ic = document.createElement('div');
     ic.className = 'ic'; ic.style.background = g.color;
@@ -85,7 +98,7 @@
     const sub = document.createElement('div'); sub.className = 'sub';
     const nx = next && next.groupId === g.id ? next : null;
     sub.textContent = !tasks.length ? 'No tasks yet'
-      : g.collapsed ? (nx ? `Up next: ${nx.title}` : todo.length ? `${todo.length} to do` : 'All done ✓')
+      : collapsed ? (nx ? `Up next: ${nx.title}` : todo.length ? `${todo.length} to do` : 'All done ✓')
       : `${done.length} of ${tasks.length} done`;
     txt.append(h, sub);
 
@@ -111,9 +124,12 @@
     });
 
     top.append(gg, ic, txt, edit);
-    if (g.collapsed || !tasks.length) {
+    if (complete) {
+      const ok = document.createElement('div'); ok.className = 'okmark'; ok.innerHTML = TICK;
+      top.append(ok);
+    } else if (collapsed || !tasks.length) {
       const c = document.createElement('div'); c.className = 'chev'; c.innerHTML = CHEV;
-      c.style.transform = g.collapsed ? '' : 'rotate(180deg)';
+      c.style.transform = collapsed ? '' : 'rotate(180deg)';
       top.append(c);
     } else {
       const ring = document.createElement('div');
