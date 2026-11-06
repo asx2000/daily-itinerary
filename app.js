@@ -59,6 +59,7 @@
 
     const next = upNext();
     const box = $('groups');
+    box.classList.remove('reordering'); // never leave the compact drag view on
     box.textContent = '';
     state.groups.forEach(g => box.append(card(g, next)));
   }
@@ -307,6 +308,7 @@
       grip.removeEventListener('pointerup', end);
       grip.removeEventListener('pointercancel', end);
       document.body.classList.remove('dragging');
+      box.classList.remove('reordering'); // restore the task lists
       const byId = new Map(state.groups.map(g => [g.id, g]));
       const order = [];
       [...box.children].forEach(c => {
